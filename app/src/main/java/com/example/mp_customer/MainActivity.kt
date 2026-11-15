@@ -46,6 +46,15 @@ class MainActivity : AppCompatActivity() {
     val tasteNames = arrayOf("달달한 맛", "상큼한 맛", "고소한 맛", "매운맛", "초코")
     val tasteSelected = BooleanArray(5)     // 맛 필터마다 켜져 있는지
 
+    // 맛 버튼마다 "같은 뜻으로 볼 단어들"
+    val tasteKeywords = arrayOf(
+        arrayOf("달달", "달콤"),
+        arrayOf("상큼", "새콤", "산뜻"),
+        arrayOf("고소"),
+        arrayOf("매운", "매콤", "마라", "얼얼"),
+        arrayOf("초코", "초콜릿")
+    )
+
     // 하단 메뉴
     lateinit var navHome : LinearLayout
     lateinit var navSearch : LinearLayout
@@ -187,13 +196,16 @@ class MainActivity : AppCompatActivity() {
         if (selectedBrand != "전체" && recipe.brand != selectedBrand) {
             return false
         }
-        // 2. 맛: 하나도 안 골랐으면 통과, 골랐으면 그중 하나라도 있어야 통과
+        // 2. 맛: 하나도 안 골랐으면 통과, 골랐으면 그중 하나라도 비슷한 말이 있어야 통과
+        val text = recipe.tastes + " " + recipe.name   // 이름에 초콜릿이 든 음료도 잡기 위해 이름도 같이 검사
         var anySelected = false
         for (i in tasteNames.indices) {
             if (tasteSelected[i]) {
                 anySelected = true
-                if (recipe.tastes.contains(tasteNames[i])) {
-                    return true
+                for (word in tasteKeywords[i]) {
+                    if (text.contains(word)) {
+                        return true
+                    }
                 }
             }
         }
